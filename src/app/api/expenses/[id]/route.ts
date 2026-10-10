@@ -4,13 +4,14 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { parsePositiveIntId, positiveIdSchema } from "@/lib/ids";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
 const updateSchema = z.object({
-  orderId: z.string().min(1).nullable().optional(),
+  orderId: positiveIdSchema.nullable().optional(),
   category: z.string().trim().min(1).max(100).optional(),
   description: z.string().trim().max(500).nullable().optional(),
   amount: z.number().positive().finite().optional(),
@@ -25,7 +26,10 @@ export async function GET(
   const auth = await requireRole(["ADMIN", "MANAGER", "FINANCE"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   const expense = await prisma.expense.findUnique({
     where: { id },
@@ -47,7 +51,10 @@ export async function PATCH(
   const auth = await requireRole(["ADMIN", "MANAGER", "FINANCE"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
   const parsed = updateSchema.safeParse(await request.json());
 
   if (!parsed.success || Object.keys(parsed.data ?? {}).length === 0) {
@@ -94,7 +101,10 @@ export async function DELETE(
   const auth = await requireRole(["ADMIN"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   const existing = await prisma.expense.findUnique({ where: { id } });
   if (!existing) {

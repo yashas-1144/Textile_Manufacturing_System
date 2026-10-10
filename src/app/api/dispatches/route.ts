@@ -4,15 +4,16 @@ import { Prisma, DispatchStatus, QualityStatus } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { positiveIdSchema } from "@/lib/ids";
 
 export const runtime = "nodejs";
 
 const createDispatchSchema = z.object({
   dispatchNo: z.string().trim().min(1).max(60),
-  orderId: z.string().min(1),
+  orderId: positiveIdSchema,
   vehicleNo: z.string().trim().max(30).optional().nullable(),
   items: z.array(z.object({
-    rollId: z.string().min(1),
+    rollId: positiveIdSchema,
     quantity: z.coerce.number().positive().finite(),
   })).min(1).refine(
     items => new Set(items.map(item => item.rollId)).size === items.length,

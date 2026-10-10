@@ -4,12 +4,13 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { positiveIdSchema } from "@/lib/ids";
 
 export const runtime = "nodejs";
 
 const createRollSchema = z.object({
   rollCode: z.string().trim().min(1).max(60),
-  orderId: z.string().min(1),
+  orderId: positiveIdSchema,
   machineCode: z.string().trim().max(60).nullable().optional(),
   quantity: z.coerce.number().positive().finite(),
 });

@@ -4,6 +4,7 @@ import { Prisma, DispatchStatus } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { parsePositiveIntId } from "@/lib/ids";
 
 export const runtime = "nodejs";
 
@@ -20,7 +21,10 @@ export async function GET(_request: Request, { params }: RouteContext) {
   const auth = await requireRole(["ADMIN", "MANAGER", "DISPATCH", "FINANCE"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const dispatch = await prisma.dispatch.findUnique({
@@ -47,7 +51,10 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   const auth = await requireRole(["ADMIN", "MANAGER", "DISPATCH"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const body: unknown = await request.json();

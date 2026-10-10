@@ -4,11 +4,12 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { positiveIdSchema } from "@/lib/ids";
 
 const roles = ["ADMIN", "MANAGER", "FINANCE"];
 
 const paymentSchema = z.object({
-  invoiceId: z.string().min(1),
+  invoiceId: positiveIdSchema,
   amount: z
     .number()
     .positive()

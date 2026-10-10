@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { parsePositiveIntId } from "@/lib/ids";
 
 export const runtime = "nodejs";
 
@@ -29,7 +30,10 @@ export async function GET(
   ]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const buyer = await prisma.buyer.findUnique({ where: { id } });
@@ -52,7 +56,10 @@ export async function PATCH(
   const auth = await requireRole(["ADMIN", "MANAGER"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const body: unknown = await request.json();
@@ -102,7 +109,10 @@ export async function DELETE(
   const auth = await requireRole(["ADMIN"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const buyer = await prisma.buyer.findUnique({

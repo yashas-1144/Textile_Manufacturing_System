@@ -4,11 +4,12 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { parsePositiveIntId, positiveIdSchema } from "@/lib/ids";
 
 const roles = ["ADMIN", "MANAGER", "FINANCE"];
 
 const expenseSchema = z.object({
-  orderId: z.string().min(1).optional().nullable(),
+  orderId: positiveIdSchema.optional().nullable(),
   category: z.string().trim().min(1).max(100),
   description: z.string().trim().max(500).optional(),
   amount: z.number().positive().finite(),
@@ -22,12 +23,19 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const category = searchParams.get("category");
-  const orderId = searchParams.get("orderId");
+  const orderIdParam = searchParams.get("orderId");
+  const orderId = orderIdParam === null
+    ? null
+    : parsePositiveIntId(orderIdParam);
+
+  if (orderIdParam !== null && orderId === null) {
+    return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
+  }
 
   const expenses = await prisma.expense.findMany({
     where: {
       ...(category ? { category: { equals: category, mode: "insensitive" as const } } : {}),
-      ...(orderId ? { orderId } : {}),
+      ...(orderId !== null ? { orderId } : {}),
     },
     include: {
       order: {

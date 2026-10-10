@@ -4,6 +4,7 @@ import { Prisma, OrderStatus } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { parsePositiveIntId } from "@/lib/ids";
 
 export const runtime = "nodejs";
 
@@ -29,7 +30,10 @@ export async function GET(
   const auth = await requireRole(["ADMIN", "MANAGER", "DISPATCH", "FINANCE", "OPERATOR"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const order = await prisma.order.findUnique({
@@ -55,7 +59,10 @@ export async function PATCH(
   const auth = await requireRole(["ADMIN", "MANAGER"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const body: unknown = await request.json();

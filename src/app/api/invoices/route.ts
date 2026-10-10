@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { positiveIdSchema } from "@/lib/ids";
 
 const roles = ["ADMIN", "MANAGER", "FINANCE"];
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
 
   const schema = z.object({
     invoiceNo: z.string().trim().min(1).max(50),
-    dispatchId: z.string().min(1),
+    dispatchId: positiveIdSchema,
     taxAmount: z.number().min(0).default(0),
   });
 

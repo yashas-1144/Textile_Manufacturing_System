@@ -4,6 +4,7 @@ import { Prisma, QualityStatus } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { parsePositiveIntId } from "@/lib/ids";
 
 export const runtime = "nodejs";
 
@@ -27,7 +28,10 @@ export async function GET(
   ]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const roll = await prisma.finishedRoll.findUnique({
@@ -67,7 +71,10 @@ export async function PATCH(
   const auth = await requireRole(["ADMIN", "MANAGER", "OPERATOR"]);
   if (auth.error) return auth.error;
 
-  const { id } = await params;
+  const id = parsePositiveIntId((await params).id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
     const body: unknown = await request.json();

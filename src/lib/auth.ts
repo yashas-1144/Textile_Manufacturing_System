@@ -2,6 +2,7 @@
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import { prisma } from "@/lib/prisma";
+import { MAX_INT_ID } from "@/lib/ids";
 
 const secretValue = process.env.JWT_SECRET;
 
@@ -11,8 +12,8 @@ if (!secretValue || secretValue.length < 32) {
 
 const secret = new TextEncoder().encode(secretValue);
 
-export async function createSession(userId: string) {
-  const token = await new SignJWT({ sub: userId })
+export async function createSession(userId: number) {
+  const token = await new SignJWT({ sub: String(userId) })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("8h")
@@ -40,11 +41,16 @@ export async function getCurrentUser() {
       algorithms: ["HS256"],
     });
 
-    if (!payload.sub) return null;
+    if (!payload.sub || !/^\d+$/.test(payload.sub)) return null;
+
+    const userId = Number(payload.sub);
+    if (!Number.isSafeInteger(userId) || userId <= 0 || userId > MAX_INT_ID) {
+      return null;
+    }
 
     return await prisma.user.findFirst({
       where: {
-        id: payload.sub,
+        id: userId,
         active: true,
       },
       select: {

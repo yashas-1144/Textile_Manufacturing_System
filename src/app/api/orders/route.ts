@@ -4,12 +4,13 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { positiveIdSchema } from "@/lib/ids";
 
 export const runtime = "nodejs";
 
 const createOrderSchema = z.object({
   orderNumber: z.string().trim().min(1).max(50),
-  buyerId: z.string().min(1),
+  buyerId: positiveIdSchema,
   fabricType: z.string().trim().min(1).max(100),
   colour: z.string().trim().min(1).max(60),
   quantity: z.coerce.number().positive().finite(),
