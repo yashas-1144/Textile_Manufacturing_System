@@ -1,0 +1,29 @@
+[0;1;32m●[0m postgresql.service - PostgreSQL database server
+     Loaded: loaded (]8;;file://archlinux/usr/lib/systemd/system/postgresql.service\/usr/lib/systemd/system/postgresql.service]8;;\; [0;1;32menabled[0m; preset: [0;1;38:5:185mdisabled[0m)
+     Active: [0;1;32mactive (running)[0m since Sat 2026-10-10 11:47:22 IST; 4s ago
+ Invocation: ac1e1d4596a9477994a91a3a179175f0
+       Docs: ]8;;man:postgres(1)\man:postgres(1)]8;;\
+    Process: 32301 ExecStartPre=/usr/bin/postgresql-check-db-dir ${PGROOT}/data (code=exited, status=0/SUCCESS)
+   Main PID: 32305 (postgres)
+      Tasks: 9[0;38:5:245m (limit: 18083)[0m
+     Memory: 22M (peak: 23.6M)
+        CPU: 72ms
+     CGroup: /system.slice/postgresql.service
+             ├─[0;38:5:245m32305 /usr/bin/postgres -D /var/lib/postgres/data[0m
+             ├─[0;38:5:245m32307 "postgres: io worker 0"[0m
+             ├─[0;38:5:245m32308 "postgres: io worker 1"[0m
+             ├─[0;38:5:245m32309 "postgres: io worker 2"[0m
+             ├─[0;38:5:245m32310 "postgres: checkpointer "[0m
+             ├─[0;38:5:245m32311 "postgres: background writer "[0m
+             ├─[0;38:5:245m32313 "postgres: walwriter "[0m
+             ├─[0;38:5:245m32314 "postgres: autovacuum launcher "[0m
+             └─[0;38:5:245m32315 "postgres: logical replication launcher "[0m
+
+Oct 10 11:47:22 archlinux systemd[1]: Starting PostgreSQL database server...
+Oct 10 11:47:22 archlinux postgres[32305]: 2026-10-10 11:47:22.914 IST [32305] LOG:  starting PostgreSQL 18.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 16.2.1 20260810, 64-bit
+Oct 10 11:47:22 archlinux postgres[32305]: 2026-10-10 11:47:22.914 IST [32305] LOG:  listening on IPv6 address "::1", port 5432
+Oct 10 11:47:22 archlinux postgres[32305]: 2026-10-10 11:47:22.914 IST [32305] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+Oct 10 11:47:22 archlinux postgres[32305]: 2026-10-10 11:47:22.915 IST [32305] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+Oct 10 11:47:22 archlinux postgres[32312]: 2026-10-10 11:47:22.919 IST [32312] LOG:  database system was shut down at 2026-10-10 11:47:16 IST
+Oct 10 11:47:22 archlinux postgres[32305]: 2026-10-10 11:47:22.922 IST [32305] LOG:  database system is ready to accept connections
+Oct 10 11:47:22 archlinux systemd[1]: Started PostgreSQL database server.
