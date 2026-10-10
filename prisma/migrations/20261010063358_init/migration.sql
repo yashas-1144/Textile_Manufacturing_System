@@ -1,21 +1,55 @@
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'MANAGER', 'DISPATCH', 'FINANCE', 'OPERATOR');
+```sql
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'IN_PRODUCTION', 'QUALITY_CHECK', 'READY', 'PARTIALLY_DISPATCHED', 'DISPATCHED', 'CANCELLED');
+CREATE TYPE "Role" AS ENUM (
+    'ADMIN',
+    'MANAGER',
+    'DISPATCH',
+    'FINANCE',
+    'OPERATOR'
+);
 
 -- CreateEnum
-CREATE TYPE "QualityStatus" AS ENUM ('PENDING', 'PASSED', 'REWORK', 'REJECTED');
+CREATE TYPE "OrderStatus" AS ENUM (
+    'PENDING',
+    'IN_PRODUCTION',
+    'QUALITY_CHECK',
+    'READY',
+    'PARTIALLY_DISPATCHED',
+    'DISPATCHED',
+    'CANCELLED'
+);
 
 -- CreateEnum
-CREATE TYPE "DispatchStatus" AS ENUM ('PENDING', 'PACKED', 'DISPATCHED', 'DELIVERED', 'CANCELLED');
+CREATE TYPE "QualityStatus" AS ENUM (
+    'PENDING',
+    'PASSED',
+    'REWORK',
+    'REJECTED'
+);
 
 -- CreateEnum
-CREATE TYPE "InvoiceStatus" AS ENUM ('UNPAID', 'PARTIALLY_PAID', 'PAID', 'VOID');
+CREATE TYPE "DispatchStatus" AS ENUM (
+    'PENDING',
+    'PACKED',
+    'DISPATCHED',
+    'DELIVERED',
+    'CANCELLED'
+);
+
+-- CreateEnum
+CREATE TYPE "InvoiceStatus" AS ENUM (
+    'UNPAID',
+    'PARTIALLY_PAID',
+    'PAID',
+    'VOID'
+);
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
@@ -28,7 +62,7 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Buyer" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT,
     "phone" TEXT,
@@ -40,9 +74,9 @@ CREATE TABLE "Buyer" (
 
 -- CreateTable
 CREATE TABLE "Order" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "orderNumber" TEXT NOT NULL,
-    "buyerId" TEXT NOT NULL,
+    "buyerId" INTEGER NOT NULL,
     "fabricType" TEXT NOT NULL,
     "colour" TEXT NOT NULL,
     "quantity" DECIMAL(12,3) NOT NULL,
@@ -56,9 +90,9 @@ CREATE TABLE "Order" (
 
 -- CreateTable
 CREATE TABLE "FinishedRoll" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "rollCode" TEXT NOT NULL,
-    "orderId" TEXT NOT NULL,
+    "orderId" INTEGER NOT NULL,
     "machineCode" TEXT,
     "quantity" DECIMAL(12,3) NOT NULL,
     "dispatchedQuantity" DECIMAL(12,3) NOT NULL DEFAULT 0,
@@ -70,9 +104,9 @@ CREATE TABLE "FinishedRoll" (
 
 -- CreateTable
 CREATE TABLE "Dispatch" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "dispatchNo" TEXT NOT NULL,
-    "orderId" TEXT NOT NULL,
+    "orderId" INTEGER NOT NULL,
     "status" "DispatchStatus" NOT NULL DEFAULT 'PENDING',
     "vehicleNo" TEXT,
     "dispatchedAt" TIMESTAMP(3),
@@ -84,9 +118,9 @@ CREATE TABLE "Dispatch" (
 
 -- CreateTable
 CREATE TABLE "DispatchItem" (
-    "id" TEXT NOT NULL,
-    "dispatchId" TEXT NOT NULL,
-    "rollId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "dispatchId" INTEGER NOT NULL,
+    "rollId" INTEGER NOT NULL,
     "quantity" DECIMAL(12,3) NOT NULL,
 
     CONSTRAINT "DispatchItem_pkey" PRIMARY KEY ("id")
@@ -94,9 +128,9 @@ CREATE TABLE "DispatchItem" (
 
 -- CreateTable
 CREATE TABLE "Invoice" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "invoiceNo" TEXT NOT NULL,
-    "dispatchId" TEXT NOT NULL,
+    "dispatchId" INTEGER NOT NULL,
     "subtotal" DECIMAL(12,2) NOT NULL,
     "taxAmount" DECIMAL(12,2) NOT NULL DEFAULT 0,
     "total" DECIMAL(12,2) NOT NULL,
@@ -108,8 +142,8 @@ CREATE TABLE "Invoice" (
 
 -- CreateTable
 CREATE TABLE "Payment" (
-    "id" TEXT NOT NULL,
-    "invoiceId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "invoiceId" INTEGER NOT NULL,
     "amount" DECIMAL(12,2) NOT NULL,
     "reference" TEXT,
     "paidAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -119,8 +153,8 @@ CREATE TABLE "Payment" (
 
 -- CreateTable
 CREATE TABLE "Expense" (
-    "id" TEXT NOT NULL,
-    "orderId" TEXT,
+    "id" SERIAL NOT NULL,
+    "orderId" INTEGER,
     "category" TEXT NOT NULL,
     "description" TEXT,
     "amount" DECIMAL(12,2) NOT NULL,
@@ -139,13 +173,15 @@ CREATE UNIQUE INDEX "Order_orderNumber_key" ON "Order"("orderNumber");
 CREATE UNIQUE INDEX "FinishedRoll_rollCode_key" ON "FinishedRoll"("rollCode");
 
 -- CreateIndex
-CREATE INDEX "FinishedRoll_orderId_qualityStatus_idx" ON "FinishedRoll"("orderId", "qualityStatus");
+CREATE INDEX "FinishedRoll_orderId_qualityStatus_idx"
+ON "FinishedRoll"("orderId", "qualityStatus");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Dispatch_dispatchNo_key" ON "Dispatch"("dispatchNo");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "DispatchItem_dispatchId_rollId_key" ON "DispatchItem"("dispatchId", "rollId");
+CREATE UNIQUE INDEX "DispatchItem_dispatchId_rollId_key"
+ON "DispatchItem"("dispatchId", "rollId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Invoice_invoiceNo_key" ON "Invoice"("invoiceNo");
@@ -154,25 +190,50 @@ CREATE UNIQUE INDEX "Invoice_invoiceNo_key" ON "Invoice"("invoiceNo");
 CREATE UNIQUE INDEX "Invoice_dispatchId_key" ON "Invoice"("dispatchId");
 
 -- AddForeignKey
-ALTER TABLE "Order" ADD CONSTRAINT "Order_buyerId_fkey" FOREIGN KEY ("buyerId") REFERENCES "Buyer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Order"
+ADD CONSTRAINT "Order_buyerId_fkey"
+FOREIGN KEY ("buyerId") REFERENCES "Buyer"("id")
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "FinishedRoll" ADD CONSTRAINT "FinishedRoll_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "FinishedRoll"
+ADD CONSTRAINT "FinishedRoll_orderId_fkey"
+FOREIGN KEY ("orderId") REFERENCES "Order"("id")
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Dispatch" ADD CONSTRAINT "Dispatch_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Dispatch"
+ADD CONSTRAINT "Dispatch_orderId_fkey"
+FOREIGN KEY ("orderId") REFERENCES "Order"("id")
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DispatchItem" ADD CONSTRAINT "DispatchItem_dispatchId_fkey" FOREIGN KEY ("dispatchId") REFERENCES "Dispatch"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DispatchItem"
+ADD CONSTRAINT "DispatchItem_dispatchId_fkey"
+FOREIGN KEY ("dispatchId") REFERENCES "Dispatch"("id")
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DispatchItem" ADD CONSTRAINT "DispatchItem_rollId_fkey" FOREIGN KEY ("rollId") REFERENCES "FinishedRoll"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DispatchItem"
+ADD CONSTRAINT "DispatchItem_rollId_fkey"
+FOREIGN KEY ("rollId") REFERENCES "FinishedRoll"("id")
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_dispatchId_fkey" FOREIGN KEY ("dispatchId") REFERENCES "Dispatch"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Invoice"
+ADD CONSTRAINT "Invoice_dispatchId_fkey"
+FOREIGN KEY ("dispatchId") REFERENCES "Dispatch"("id")
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Payment" ADD CONSTRAINT "Payment_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Payment"
+ADD CONSTRAINT "Payment_invoiceId_fkey"
+FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id")
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Expense" ADD CONSTRAINT "Expense_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Expense"
+ADD CONSTRAINT "Expense_orderId_fkey"
+FOREIGN KEY ("orderId") REFERENCES "Order"("id")
+ON DELETE SET NULL ON UPDATE CASCADE;
+```
