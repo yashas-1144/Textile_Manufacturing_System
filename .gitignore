@@ -45,3 +45,6 @@ next-env.d.ts
 
 cookies.txt
 udo -iu postgres psql
+
+cookies.txt
+udo -iu postgres psql
