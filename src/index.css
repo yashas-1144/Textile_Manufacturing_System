@@ -1,0 +1,152 @@
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Primary Pink */
+  --color-primary-50: #fdf2f8;
+  --color-primary-100: #fce7f3;
+  --color-primary-200: #fbcfe8;
+  --color-primary-300: #f9a8d4;
+  --color-primary-400: #f472b6;
+  --color-primary-500: #ec4899;
+  --color-primary-600: #db2777;
+  --color-primary-700: #be185d;
+  --color-primary-800: #9d174d;
+  --color-primary-900: #831843;
+  --color-primary-950: #500724;
+
+  /* Blush Background */
+  --color-blush-50: #fff7fa;
+  --color-blush-100: #fce7f3;
+  --color-blush-200: #fbcfe8;
+  --color-blush-300: #f9a8d4;
+  --color-blush-400: #f472b6;
+
+  /* Existing Navy Colors */
+  --color-navy-50: #f8fafc;
+  --color-navy-100: #f1f5f9;
+  --color-navy-200: #e2e8f0;
+  --color-navy-300: #cbd5e1;
+  --color-navy-400: #94a3b8;
+  --color-navy-500: #64748b;
+  --color-navy-600: #475569;
+  --color-navy-700: #334155;
+  --color-navy-800: #1e293b;
+  --color-navy-900: #0f172a;
+  --color-navy-950: #020617;
+
+  /* Existing Charcoal Colors */
+  --color-charcoal-50: #fafafa;
+  --color-charcoal-100: #f4f4f5;
+  --color-charcoal-200: #e4e4e7;
+  --color-charcoal-300: #d4d4d8;
+  --color-charcoal-400: #a1a1aa;
+  --color-charcoal-500: #71717a;
+  --color-charcoal-600: #52525b;
+  --color-charcoal-700: #3f3f46;
+  --color-charcoal-800: #27272a;
+  --color-charcoal-900: #18181b;
+  --color-charcoal-950: #09090b;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    background-color: #fff7fa;
+    color: #27272a;
+    font-family: var(--font-sans);
+  }
+
+  * {
+    border-color: #f3dce6;
+  }
+
+  :focus-visible {
+    outline: 2px solid #db2777;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: #fbcfe8;
+    color: #831843;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #f9a8d4 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #f9a8d4;
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: #ec4899;
+  }
+
+  .animate-in {
+    animation: texflow-in 0.15s ease-out;
+  }
+
+  .blush-card {
+    background-color: #ffffff;
+    border: 1px solid #f3dce6;
+    border-radius: 14px;
+    box-shadow: 0 2px 6px rgb(190 24 93 / 0.06);
+  }
+
+  .blush-button {
+    background-color: #db2777;
+    color: #ffffff;
+    transition: background-color 0.2s ease;
+  }
+
+  .blush-button:hover {
+    background-color: #be185d;
+  }
+
+  .blush-sidebar {
+    background-color: #fce7f3;
+    color: #27272a;
+  }
+}
+
+@keyframes texflow-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
