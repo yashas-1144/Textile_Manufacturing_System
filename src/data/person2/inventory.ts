@@ -1,3 +1,0 @@
-import type { InventoryTransaction, RawMaterial } from '../../types/person2/inventory';
-export const INITIAL_RAW_MATERIALS: RawMaterial[] = [{ id: 'RM-001', name: 'Combed Cotton Yarn', category: 'Yarn', colour: 'Natural', supplier: 'Cotton Mills Ltd', availableQuantity: 2500, minimumStockLevel: 800, unit: 'kg', status: 'Available', lastRestockedDate: '2026-10-05', location: 'Warehouse A', unitCost: 180 }];
-export const INITIAL_INVENTORY_TRANSACTIONS: InventoryTransaction[] = [{ id: 'TXN-001', materialId: 'RM-001', materialName: 'Combed Cotton Yarn', type: 'Received', quantity: 2500, unit: 'kg', referenceId: 'GRN-001', timestamp: '2026-10-05 09:00', performedBy: 'Warehouse Store', notes: 'Opening stock' }];
